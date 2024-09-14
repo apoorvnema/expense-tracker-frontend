@@ -1,43 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const Profile = () => {
-  const [fullName, setFullName] = useState('');
-  const [photoURL, setPhotoURL] = useState('');
+  const location = useLocation();
+  const [fullName, setFullName] = useState(location.state?.fullName || '');
+  const [photoURL, setPhotoURL] = useState(location.state?.photoURL || '');
   const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const idToken = localStorage.getItem('token');
-
-      try {
-        const response = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${API_KEY}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              idToken: idToken,
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-        const user = result.users[0];
-        setFullName(user.displayName || '');
-        setPhotoURL(user.photoUrl || '');
-      } catch (error) {
-        alert('Error fetching profile data: ' + (error.message || 'Something went wrong'));
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
 
   const handleUpdateProfile = async () => {
     const idToken = localStorage.getItem('token');
