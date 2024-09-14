@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../components/UI/Loader';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -55,8 +56,13 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
+  };
+
   return (
     <div style={styles.container}>
+      {loading && <Loader />}
       <div style={styles.card}>
         <h2 style={styles.header}>Login</h2>
         <input
@@ -82,6 +88,9 @@ const Login = () => {
         </button>
         <p style={styles.loginText}>
           Don't have an account? <a href="/signup" style={styles.signupLink}>Sign Up</a>
+        </p>
+        <p style={styles.forgotPasswordText}>
+          <a href="#" onClick={handleForgotPassword} style={styles.forgotPasswordLink}>Forgot Password?</a>
         </p>
       </div>
     </div>
@@ -131,6 +140,15 @@ const styles = {
     color: '#888',
   },
   signupLink: {
+    color: '#007bff',
+    textDecoration: 'none',
+  },
+  forgotPasswordText: {
+    fontSize: '14px',
+    color: '#888',
+    marginTop: '10px',
+  },
+  forgotPasswordLink: {
     color: '#007bff',
     textDecoration: 'none',
   },

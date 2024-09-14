@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Loader from '../components/UI/Loader';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const Signup = () => {
       alert(error);
       setError('');
     }
-  }, [error]); 
+  }, [error]);
 
   const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
 
@@ -60,6 +61,7 @@ const Signup = () => {
 
   return (
     <div style={styles.container}>
+      {loading && <Loader />}
       <div style={styles.card}>
         <h2 style={styles.header}>SignUp</h2>
         <input
