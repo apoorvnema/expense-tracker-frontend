@@ -1,38 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Signup = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
 
   useEffect(() => {
     if (error.trim() !== '') {
       alert(error);
-      setError('');
     }
-  }, [error]); 
+  }, [error]);
 
-  const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
-
-  const handleSignup = async () => {
+  const handleLogin = async () => {
     setError('');
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password) {
       setError('All fields are mandatory.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`, {
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,9 +41,12 @@ const Signup = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert('User has successfully signed up.');
+        localStorage.setItem('token', data.idToken);
+        console.log('User has successfully logged in.');
+
+        navigate('/expense-tracker');
       } else {
-        setError(data.error.message || 'Signup failed.');
+        setError(data.error.message || 'Login failed.');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
@@ -61,7 +58,7 @@ const Signup = () => {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.header}>SignUp</h2>
+        <h2 style={styles.header}>Login</h2>
         <input
           type="email"
           placeholder="Email"
@@ -76,22 +73,15 @@ const Signup = () => {
           onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          style={styles.input}
-        />
         <button
-          onClick={handleSignup}
+          onClick={handleLogin}
           style={styles.button}
           disabled={loading}
         >
-          {loading ? 'Signing Up...' : 'Sign up'}
+          {loading ? 'Logging in...' : 'Login'}
         </button>
         <p style={styles.loginText}>
-          Have an account? <Link to="/login" style={styles.loginLink}>Login</Link>
+          Don't have an account? <a href="/signup" style={styles.signupLink}>Sign Up</a>
         </p>
       </div>
     </div>
@@ -136,22 +126,14 @@ const styles = {
     fontSize: '16px',
     marginBottom: '20px',
   },
-  buttonHover: {
-    backgroundColor: '#0056b3',
-  },
   loginText: {
     fontSize: '14px',
     color: '#888',
   },
-  loginLink: {
+  signupLink: {
     color: '#007bff',
     textDecoration: 'none',
   },
-  errorText: {
-    color: 'red',
-    marginBottom: '15px',
-  },
 };
 
-export default Signup;
-
+export default Login;
