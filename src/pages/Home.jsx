@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/UI/Loader';
+import DailyExpenses from './DailyExpenses';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -108,12 +109,10 @@ const Home = () => {
                 Logout
             </button>
             <h1>Welcome to Expense Tracker</h1>
-            <p>
-                {isProfileComplete ?
-                    (isEmailVerified ? 'Your profile is complete and your email is verified.' : 'Your profile is complete but your email is not verified. Please verify your email to continue.') :
-                    'Your profile is incomplete. Please complete your profile to continue.'
-                }
-            </p>
+            {isProfileComplete ?
+                (isEmailVerified ? <DailyExpenses /> : <p>Your profile is complete but your email is not verified. Please verify your email to continue.</p>) :
+                <p>Your profile is incomplete. Please complete your profile to continue.</p>
+            }
             {!isProfileComplete && (
                 <button style={styles.button} onClick={handleCompleteProfile}>
                     Complete
