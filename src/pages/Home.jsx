@@ -4,6 +4,9 @@ import Loader from '../components/UI/Loader';
 import DailyExpenses from './DailyExpenses';
 import { useDispatch, useSelector } from 'react-redux';
 import { authActions } from '../store/auth';
+import { exportToCSV } from '../utils/exportToCSV';
+import { expensesAction } from '../store/expense';
+import { themeActions } from '../store/theme';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -12,7 +15,9 @@ const Home = () => {
     const [fullName, setFullName] = useState('');
     const [photoURL, setPhotoURL] = useState('');
     const [isProfileComplete, setIsProfileComplete] = useState(false);
+    const expense = useSelector((state) => state.expense.expenses);
     const premiumActive = useSelector((state) => state.expense.premiumActive)
+    const premiumPurchase = useSelector((state) => state.expense.premiumPurchase)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -107,12 +112,40 @@ const Home = () => {
         navigate('/login');
     };
 
+    const handleDownload = () => {
+        const csvData = exportToCSV(expense);
+        const link = document.createElement('a');
+        link.href = csvData;
+        link.download = 'expenses.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handlePremiumPurchase = () => {
+        dispatch(expensesAction.activatePremium());
+    };
+
+    const handleDarkMode = () => {
+        dispatch(themeActions.toggleTheme())
+    };
+
     return (
         <div style={styles.container}>
             {loading && <Loader />}
-            {premiumActive && <button style={styles.premiumButton} onClick={handleLogout}>
+            {premiumActive && !premiumPurchase && <button style={styles.premiumButton} onClick={handlePremiumPurchase}>
                 Activate Premium
             </button>}
+            {premiumPurchase && (
+                <>
+                <button style={styles.premiumButton} onClick={handleDownload}>
+                    Download Expenses as CSV
+                </button>
+                <button style={styles.darkMode} onClick={handleDarkMode}>
+                    Dark Mode
+                </button>
+                </>
+            )}
             <button style={styles.logoutButton} onClick={handleLogout}>
                 Logout
             </button>
@@ -145,7 +178,7 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: '#f4f4f4',
+        // backgroundColor: '#f4f4f4',
         fontSize: '24px',
     },
     button: {
@@ -178,6 +211,18 @@ const styles = {
         fontSize: '16px',
         color: '#fff',
         backgroundColor: '#28a745',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+    darkMode: {
+        position: 'absolute',
+        top: '20px',
+        right: '380px',
+        padding: '10px 20px',
+        fontSize: '16px',
+        color: '#fff',
+        backgroundColor: '#343a40',
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',

@@ -4,6 +4,7 @@ const initialState = {
   expenses: [],
   totalAmount: 0,
   premiumActive: false,
+  premiumPurchase: false,
 };
 
 const expensesSlice = createSlice({
@@ -27,7 +28,7 @@ const expensesSlice = createSlice({
       }
     },
     activatePremium(state) {
-      state.premiumActive = true;
+      state.premiumPurchase = true;
     },
     deleteExpense(state, action) {
       const deletedExpense = state.expenses.find(expense => expense.id === action.payload);
