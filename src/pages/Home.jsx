@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/UI/Loader';
 import DailyExpenses from './DailyExpenses';
+import { useDispatch, useSelector } from 'react-redux';
+import { authActions } from '../store/auth';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -10,6 +12,8 @@ const Home = () => {
     const [fullName, setFullName] = useState('');
     const [photoURL, setPhotoURL] = useState('');
     const [isProfileComplete, setIsProfileComplete] = useState(false);
+    const premiumActive = useSelector((state) => state.expense.premiumActive)
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const checkEmailVerification = async () => {
@@ -99,12 +103,16 @@ const Home = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        dispatch(authActions.logout());
         navigate('/login');
     };
 
     return (
         <div style={styles.container}>
             {loading && <Loader />}
+            {premiumActive && <button style={styles.premiumButton} onClick={handleLogout}>
+                Activate Premium
+            </button>}
             <button style={styles.logoutButton} onClick={handleLogout}>
                 Logout
             </button>
@@ -158,6 +166,18 @@ const styles = {
         fontSize: '16px',
         color: '#fff',
         backgroundColor: '#dc3545',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+    premiumButton: {
+        position: 'absolute',
+        top: '20px',
+        right: '120px',
+        padding: '10px 20px',
+        fontSize: '16px',
+        color: '#fff',
+        backgroundColor: '#28a745',
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',

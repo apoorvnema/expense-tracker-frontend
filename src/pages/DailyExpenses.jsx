@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { expensesAction } from '../store/expense';
 
 const DailyExpenses = () => {
   const [moneySpent, setMoneySpent] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const [expenses, setExpenses] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentExpenseId, setCurrentExpenseId] = useState(null);
   const categories = ['Food', 'Petrol', 'Salary', 'Entertainment', 'Other'];
   const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
+
+  const dispatch = useDispatch();
+  const expense = useSelector((state) => state.expense);
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -19,21 +23,21 @@ const DailyExpenses = () => {
         }
         const data = await response.json();
         const expensesArray = data ? Object.entries(data).map(([id, exp]) => ({ id, ...exp })) : [];
-        setExpenses(expensesArray);
+        dispatch(expensesAction.setExpenses({ expenses: expensesArray, totalAmount: 0 }));
       } catch (error) {
         alert('Error fetching expenses: ' + error.message);
       }
     };
 
     fetchExpenses();
-  }, []);
+  }, [dispatch, DATABASE_URL]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (moneySpent && description && category) {
       const expenseData = {
-        moneySpent,
+        moneySpent: Number(moneySpent),
         description,
         category,
       };
@@ -52,9 +56,7 @@ const DailyExpenses = () => {
             throw new Error('Failed to update expense');
           }
 
-          setExpenses(
-            expenses.map((exp) => (exp.id === currentExpenseId ? { id: exp.id, ...expenseData } : exp))
-          );
+          dispatch(expensesAction.updateExpense({ id: currentExpenseId, ...expenseData }));
           setIsEditing(false);
           setCurrentExpenseId(null);
         } catch (error) {
@@ -76,7 +78,7 @@ const DailyExpenses = () => {
 
           const result = await response.json();
           const newExpense = { id: result.name, ...expenseData };
-          setExpenses([...expenses, newExpense]);
+          dispatch(expensesAction.addExpense(newExpense));
         } catch (error) {
           alert('Error adding expense: ' + error.message);
         }
@@ -100,7 +102,7 @@ const DailyExpenses = () => {
         throw new Error('Failed to delete expense');
       }
 
-      setExpenses(expenses.filter((exp) => exp.id !== expenseId));
+      dispatch(expensesAction.deleteExpense(expenseId));
     } catch (error) {
       alert('Error deleting expense: ' + error.message);
     }
@@ -148,9 +150,9 @@ const DailyExpenses = () => {
       </form>
 
       <div style={styles.expensesList}>
-        {expenses.length > 0 ? (
+        {expense.expenses.length > 0 ? (
           <ul>
-            {expenses.map((exp) => (
+            {expense.expenses.map((exp) => (
               <li key={exp.id} style={styles.expenseItem}>
                 {exp.moneySpent} - {exp.description} ({exp.category})
                 <button

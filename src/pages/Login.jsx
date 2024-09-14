@@ -1,6 +1,8 @@
+import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/UI/Loader';
+import { authActions } from '../store/auth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +10,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
 
@@ -43,6 +46,10 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem('token', data.idToken);
+        dispatch(authActions.login({
+          token: data.idToken,
+          userId: data.localId,
+        }));
         console.log('User has successfully logged in.');
 
         navigate('/expense-tracker');
