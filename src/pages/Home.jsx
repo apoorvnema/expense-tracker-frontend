@@ -90,8 +90,16 @@ const Home = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div style={styles.container}>
+      <button style={styles.logoutButton} onClick={handleLogout}>
+        Logout
+      </button>
       <h1>Welcome to Expense Tracker</h1>
       <p>
         {isProfileComplete ? 
@@ -101,7 +109,7 @@ const Home = () => {
       </p>
       {!isProfileComplete && (
         <button style={styles.button} onClick={handleCompleteProfile}>
-          Complete Profile
+          Complete
         </button>
       )}
       {!isEmailVerified && (
@@ -132,6 +140,18 @@ const styles = {
     fontSize: '16px',
     color: '#fff',
     backgroundColor: '#007bff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  logoutButton: {
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
+    padding: '10px 20px',
+    fontSize: '16px',
+    color: '#fff',
+    backgroundColor: '#dc3545',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
