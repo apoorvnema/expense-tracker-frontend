@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { expensesAction } from '../store/expense';
+import { expensesAction, fetchExpensesSummary, putExpensesSummary } from '../store/expense';
 
 const DailyExpenses = () => {
   const [moneySpent, setMoneySpent] = useState('');
@@ -22,7 +22,7 @@ const DailyExpenses = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        const expensesArray = data ? Object.entries(data).map(([id, exp]) => ({ id, ...exp })) : [];
+        const expensesArray = data ? Object.entries(data).map(([id, exp]) => ({ id, ...exp.expenseData })) : [];
         dispatch(expensesAction.setExpenses({ expenses: expensesArray, totalAmount: 0 }));
       } catch (error) {
         alert('Error fetching expenses: ' + error.message);
@@ -30,7 +30,16 @@ const DailyExpenses = () => {
     };
 
     fetchExpenses();
+    dispatch(fetchExpensesSummary());
   }, [dispatch, DATABASE_URL]);
+
+  useEffect(() => {
+    dispatch(putExpensesSummary({
+      totalAmount: expense.totalAmount,
+      premiumActive: expense.premiumActive,
+      premiumPurchase: expense.premiumPurchase
+    }));
+  }, [expense.totalAmount, expense.premiumActive, expense.premiumPurchase, dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +78,7 @@ const DailyExpenses = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(expenseData),
+            body: JSON.stringify({expenseData}),
           });
 
           if (!response.ok) {
@@ -183,7 +192,6 @@ const styles = {
     padding: '20px',
     maxWidth: '600px',
     margin: 'auto',
-    // backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   },

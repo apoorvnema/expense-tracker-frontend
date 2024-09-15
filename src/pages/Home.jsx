@@ -5,7 +5,7 @@ import DailyExpenses from './DailyExpenses';
 import { useDispatch, useSelector } from 'react-redux';
 import { authActions } from '../store/auth';
 import { exportToCSV } from '../utils/exportToCSV';
-import { expensesAction } from '../store/expense';
+import expense, { expensesAction } from '../store/expense';
 import { themeActions } from '../store/theme';
 
 const Home = () => {
@@ -133,38 +133,41 @@ const Home = () => {
     return (
         <div style={styles.container}>
             {loading && <Loader />}
-            {premiumActive && !premiumPurchase && <button style={styles.premiumButton} onClick={handlePremiumPurchase}>
-                Activate Premium
-            </button>}
-            {premiumPurchase && (
-                <>
-                <button style={styles.premiumButton} onClick={handleDownload}>
-                    Download Expenses as CSV
-                </button>
-                <button style={styles.darkMode} onClick={handleDarkMode}>
-                    Dark Mode
-                </button>
-                </>
-            )}
-            <button style={styles.logoutButton} onClick={handleLogout}>
-                Logout
-            </button>
-            <h1>Welcome to Expense Tracker</h1>
-            {isProfileComplete ?
-                (isEmailVerified ? <DailyExpenses /> : <p>Your profile is complete but your email is not verified. Please verify your email to continue.</p>) :
+            <nav style={styles.navbar}>
+                <h1 style={styles.expenseHeading}>Expense Tracker</h1>
+                <div style={styles.navItems}>
+                    {premiumActive && !premiumPurchase && <button style={styles.premiumButton} onClick={handlePremiumPurchase}>
+                        Activate Premium
+                    </button>}
+                    {premiumActive && premiumPurchase && (<button style={styles.darkMode} onClick={handleDarkMode}>
+                        Dark Mode
+                    </button>)}
+                    {premiumActive && premiumPurchase && (
+                        <button style={styles.downloadButton} onClick={handleDownload}>
+                            Download Expenses
+                        </button>
+                    )}
+                    <button style={styles.logoutButton} onClick={handleLogout}>
+                        Logout
+                    </button>
+                </div>
+            </nav>
+
+            {isProfileComplete ? (
+                isEmailVerified ? <DailyExpenses /> : <p>Your profile is complete but your email is not verified. Please verify your email to continue.</p>
+            ) : (
                 <p>Your profile is incomplete. Please complete your profile to continue.</p>
-            }
+            )}
+
             {!isProfileComplete && (
                 <button style={styles.button} onClick={handleCompleteProfile}>
-                    Complete
+                    Complete Profile
                 </button>
             )}
+
             {!isEmailVerified && (
-                <button
-                    style={styles.button}
-                    onClick={handleVerifyEmail}
-                >
-                    {isEmailVerified ? 'Email Verified' : 'Verify Email ID'}
+                <button style={styles.button} onClick={handleVerifyEmail}>
+                    Verify Email ID
                 </button>
             )}
         </div>
@@ -178,8 +181,26 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        // backgroundColor: '#f4f4f4',
         fontSize: '24px',
+    },
+    navbar: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        padding: '10px 0px',
+        backgroundColor: '#343a40',
+        color: '#fff',
+        position: 'sticky',
+        top: 0,
+    },
+    expenseHeading: {
+        fontSize: '24px',
+        color: '#fff',
+    },
+    navItems: {
+        display: 'flex',
+        gap: '10px',
     },
     button: {
         marginTop: '20px',
@@ -191,10 +212,25 @@ const styles = {
         borderRadius: '5px',
         cursor: 'pointer',
     },
+    darkMode: {
+        padding: '10px 20px',
+        fontSize: '16px',
+        color: '#fff',
+        backgroundColor: '#343a40',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+    downloadButton: {
+        padding: '10px 20px',
+        fontSize: '16px',
+        color: '#fff',
+        backgroundColor: '#28a745',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
     logoutButton: {
-        position: 'absolute',
-        top: '20px',
-        right: '20px',
         padding: '10px 20px',
         fontSize: '16px',
         color: '#fff',
@@ -204,25 +240,10 @@ const styles = {
         cursor: 'pointer',
     },
     premiumButton: {
-        position: 'absolute',
-        top: '20px',
-        right: '120px',
         padding: '10px 20px',
         fontSize: '16px',
         color: '#fff',
         backgroundColor: '#28a745',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-    darkMode: {
-        position: 'absolute',
-        top: '20px',
-        right: '380px',
-        padding: '10px 20px',
-        fontSize: '16px',
-        color: '#fff',
-        backgroundColor: '#343a40',
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
