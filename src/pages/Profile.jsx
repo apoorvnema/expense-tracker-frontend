@@ -7,11 +7,13 @@ const Profile = () => {
     const [fullName, setFullName] = useState(location.state?.fullName || '');
     const [photoURL, setPhotoURL] = useState(location.state?.photoURL || '');
     const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
+    const [loading, setLoading] = useState(false);
 
     const handleUpdateProfile = async () => {
         const idToken = localStorage.getItem('token');
 
         try {
+            setLoading(true);
             const response = await fetch(
                 `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${API_KEY}`,
                 {
@@ -37,6 +39,7 @@ const Profile = () => {
         } catch (error) {
             alert('Error updating profile: ' + (error.message || 'Something went wrong'));
         }
+        setLoading(false);
     };
 
     return (

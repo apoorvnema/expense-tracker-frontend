@@ -108,6 +108,7 @@ const Home = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('userId');
         dispatch(authActions.logout());
         navigate('/login');
     };
@@ -180,7 +181,7 @@ const styles = {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh',
+        height: '100%',
         fontSize: '24px',
     },
     navbar: {

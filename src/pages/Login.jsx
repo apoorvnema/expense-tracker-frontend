@@ -46,6 +46,7 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem('token', data.idToken);
+        localStorage.setItem('userId', data.localId);
         dispatch(authActions.login({
           token: data.idToken,
           userId: data.localId,

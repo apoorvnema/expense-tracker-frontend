@@ -15,7 +15,7 @@ const expensesSlice = createSlice({
       state.expenses.push(action.payload);
       state.totalAmount += action.payload.moneySpent;
 
-      if (state.totalAmount > 10000) {
+      if (state.totalAmount >= 10000) {
         state.premiumActive = true;
       }
     },
@@ -27,7 +27,7 @@ const expensesSlice = createSlice({
       state.premiumPurchase = action.payload.premiumPurchase;
       state.premiumActive = action.payload.premiumActive;
 
-      if (state.totalAmount > 10000) {
+      if (state.totalAmount >= 10000) {
         state.premiumActive = true;
       }
     },
@@ -62,8 +62,9 @@ const expensesSlice = createSlice({
 export const fetchExpensesSummary = () => {
   return async (dispatch) => {
     const API_KEY = import.meta.env.VITE_DATABASE_URL;
+    const userId = localStorage.getItem('userId');
     try {
-      const response = await fetch(`${API_KEY}/expensesSummary.json`);
+      const response = await fetch(`${API_KEY}/expensesSummary${userId}.json`);
       if (!response.ok) {
         throw new Error('Failed to fetch expenses summary');
       }
@@ -85,8 +86,9 @@ export const fetchExpensesSummary = () => {
 export const putExpensesSummary = (summaryData) => {
   return async () => {
     const API_KEY = import.meta.env.VITE_DATABASE_URL;
+    const userId = localStorage.getItem('userId');
     try {
-      const response = await fetch(`${API_KEY}/expensesSummary.json`, {
+      const response = await fetch(`${API_KEY}/expensesSummary${userId}.json`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

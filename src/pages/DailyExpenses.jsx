@@ -10,6 +10,7 @@ const DailyExpenses = () => {
   const [currentExpenseId, setCurrentExpenseId] = useState(null);
   const categories = ['Food', 'Petrol', 'Salary', 'Entertainment', 'Other'];
   const DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
+  const userId = localStorage.getItem('userId');
 
   const dispatch = useDispatch();
   const expense = useSelector((state) => state.expense);
@@ -17,7 +18,7 @@ const DailyExpenses = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const response = await fetch(`${DATABASE_URL}/expenses.json`);
+        const response = await fetch(`${DATABASE_URL}/expenses${userId}.json`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -73,7 +74,7 @@ const DailyExpenses = () => {
         }
       } else {
         try {
-          const response = await fetch(`${DATABASE_URL}/expenses.json`, {
+          const response = await fetch(`${DATABASE_URL}/expenses${userId}.json`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
